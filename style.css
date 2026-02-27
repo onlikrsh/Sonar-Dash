@@ -1,6 +1,12 @@
-/**
- * style.css -- Global styles, HUD overlay, typography.
+/*
+ * style.css -- Sonar Dash global styles.
+ *
+ * Palette: near-black backgrounds, cool blue-white accents.
+ * Fonts : Inter (UI / menus), Space Mono (live data / score).
+ * Motion: transform + opacity only, 60fps CSS transitions.
  */
+
+/* ===== Reset ===== */
 
 *, *::before, *::after {
     margin: 0;
@@ -8,20 +14,52 @@
     box-sizing: border-box;
 }
 
+/* ===== Custom Properties ===== */
+
 :root {
-    --font-stack: -apple-system, 'SF Pro Display', 'SF Pro Text',
-        BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue',
+    /* -- Fonts -- */
+    --font-ui: 'Inter', -apple-system, 'SF Pro Display',
+        BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue',
         Helvetica, Arial, sans-serif;
-    --color-bg: #000000;
-    --color-text: #ffffff;
-    --color-text-muted: rgba(255, 255, 255, 0.5);
+    --font-mono: 'Space Mono', 'SF Mono', 'Fira Code',
+        'Cascadia Code', 'Consolas', monospace;
+
+    /* -- Palette -- */
+    --color-bg:          #050508;
+    --color-surface:     #0b0b10;
+    --color-text:        #e8e8ec;
+    --color-text-muted:  rgba(232, 232, 236, 0.40);
+    --color-text-dim:    rgba(232, 232, 236, 0.22);
+    --color-accent:      #7b8cff;
+    --color-accent-muted: rgba(123, 140, 255, 0.35);
+
+    /* -- Spacing (4px base) -- */
+    --sp-1: 4px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 16px;
+    --sp-6: 24px;
+    --sp-8: 32px;
+    --sp-12: 48px;
+    --sp-16: 64px;
+
+    /* -- Timing -- */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --duration-fast: 180ms;
+    --duration-normal: 320ms;
+    --duration-slow: 500ms;
 }
+
+/* ===== Root ===== */
 
 html, body {
     width: 100%;
     height: 100%;
     overflow: hidden;
     background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-ui);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     user-select: none;
@@ -29,16 +67,24 @@ html, body {
     touch-action: none;
 }
 
-/* ----- Canvas ----- */
+/* ===== Canvas ===== */
 
 #game-canvas {
     display: block;
+    position: fixed;
+    inset: 0;
     width: 100%;
     height: 100%;
     background: var(--color-bg);
 }
 
-/* ----- HUD Overlay ----- */
+/* ===== Shared Type Utilities ===== */
+
+.hud-mono {
+    font-family: var(--font-mono);
+}
+
+/* ===== HUD Container ===== */
 
 #hud {
     position: fixed;
@@ -47,44 +93,161 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-family: var(--font-stack);
+    z-index: 10;
+}
+
+/* ===== Live Score (top-center during gameplay) ===== */
+
+#hud-score {
+    position: absolute;
+    top: var(--sp-12);
+    font-family: var(--font-mono);
+    font-size: 44px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--color-text);
+    opacity: 0;
+    transform: translateY(-12px);
+    transition:
+        opacity var(--duration-normal) var(--ease-out),
+        transform var(--duration-normal) var(--ease-out);
+}
+
+#hud-score.visible {
+    opacity: 0.85;
+    transform: translateY(0);
+}
+
+/* ===== Overlay Panels (Menu + Death) ===== */
+
+.hud-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        opacity var(--duration-slow) var(--ease-out),
+        visibility 0s linear var(--duration-slow);
+}
+
+.hud-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+    transition:
+        opacity var(--duration-slow) var(--ease-out),
+        visibility 0s linear 0s;
+}
+
+/* ===== Menu Screen ===== */
+
+#hud-title {
+    font-family: var(--font-ui);
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text);
+    margin-bottom: var(--sp-3);
+}
+
+#hud-subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--sp-16);
+    max-width: 260px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+#hud-prompt {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    animation: prompt-pulse 2.4s var(--ease-in-out) infinite;
+}
+
+#hud-best {
+    margin-top: var(--sp-4);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--color-text-dim);
+}
+
+@keyframes prompt-pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* ===== Death Screen ===== */
+
+#hud-death {
+    gap: var(--sp-2);
+}
+
+#hud-death-label {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-dim);
+    margin-bottom: var(--sp-1);
+}
+
+#hud-death-score {
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
     color: var(--color-text);
 }
 
-#hud-score {
-    margin-top: 48px;
-    font-size: 48px;
-    font-weight: 300;
-    letter-spacing: 0.06em;
-    line-height: 1;
-    opacity: 0.9;
-    transition: opacity 0.2s ease;
-}
-
-#hud-highscore {
-    margin-top: 12px;
+#hud-death-best {
     font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-weight: 400;
+    letter-spacing: 0.06em;
     color: var(--color-text-muted);
-    transition: opacity 0.3s ease;
+    margin-bottom: var(--sp-12);
 }
 
-#hud-message {
-    position: absolute;
-    bottom: 25%;
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
+#hud-death-prompt {
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--color-text-muted);
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    animation: prompt-pulse 2.4s var(--ease-in-out) infinite;
 }
 
-#hud-message.visible {
-    opacity: 1;
-    transform: translateY(0);
+/* ===== Responsive ===== */
+
+@media (max-width: 480px) {
+    #hud-title {
+        font-size: 22px;
+        letter-spacing: 0.14em;
+    }
+
+    #hud-subtitle {
+        font-size: 13px;
+        max-width: 220px;
+    }
+
+    #hud-score {
+        font-size: 36px;
+        top: var(--sp-8);
+    }
+
+    #hud-death-score {
+        font-size: 44px;
+    }
 }

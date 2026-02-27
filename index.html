@@ -3,16 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050508">
     <title>Sonar Dash</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <canvas id="game-canvas"></canvas>
 
+    <!-- HUD: layered over canvas, pointer-events disabled -->
     <div id="hud">
-        <div id="hud-score"></div>
-        <div id="hud-highscore"></div>
-        <div id="hud-message" class="visible">TAP TO START</div>
+
+        <!-- Live score (visible during PLAYING and DEATH) -->
+        <div id="hud-score" class="hud-mono"></div>
+
+        <!-- Menu overlay -->
+        <div id="hud-menu" class="hud-overlay visible">
+            <h1 id="hud-title">SONAR DASH</h1>
+            <p id="hud-subtitle">Tap to see. Seeing changes your path.</p>
+            <span id="hud-prompt" class="hud-mono">TAP TO START</span>
+            <span id="hud-best" class="hud-mono"></span>
+        </div>
+
+        <!-- Death overlay -->
+        <div id="hud-death" class="hud-overlay">
+            <span id="hud-death-label">DISTANCE</span>
+            <span id="hud-death-score" class="hud-mono"></span>
+            <span id="hud-death-best" class="hud-mono"></span>
+            <span id="hud-death-prompt" class="hud-mono">TAP TO RETRY</span>
+        </div>
+
     </div>
 
     <script type="module" src="src/main.js"></script>
