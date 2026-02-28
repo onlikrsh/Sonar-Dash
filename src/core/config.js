@@ -5,13 +5,14 @@
 
 export const CONFIG = {
     // --- Canvas ---
-    CANVAS_BG: '#000000',
+    CANVAS_BG: '#050508',
 
     // --- Orb ---
     ORB_RADIUS: 10,
-    ORB_COLOR: '#ffffff',
-    ORB_GLOW_RADIUS: 24,
-    ORB_GLOW_COLOR: 'rgba(255, 255, 255, 0.15)',
+    ORB_COLOR: '#e8e8ec',
+    ORB_GLOW_RADIUS: 28,
+    ORB_GLOW_INNER: 'rgba(232, 232, 236, 0.30)',
+    ORB_GLOW_OUTER: 'rgba(232, 232, 236, 0.00)',
 
     // --- Movement ---
     SCROLL_SPEED_INITIAL: 180,      // px/s  (upward)
@@ -25,15 +26,16 @@ export const CONFIG = {
     CORRIDOR_MAX_WIDTH_RATIO: 0.70,
     SEGMENT_HEIGHT: 200,            // px per generated band
     SEGMENT_BUFFER: 3,              // how many segments ahead to keep generated
-    WALL_COLOR_DEBUG: '#1a1a2e',    // visible only in debug / afterglow
-    WALL_COLOR_REVEALED: '#e0e0e0',
+    WALL_COLOR_REVEALED: '#c0c4d0', // cool light grey with slight blue tone
 
     // --- Sonar ---
     PULSE_EXPAND_SPEED: 420,        // px/s
     PULSE_LIFETIME: 0.85,           // seconds
-    PULSE_RING_WIDTH: 4,            // px
+    PULSE_RING_WIDTH: 3,            // px (slightly thinner for refinement)
     PULSE_MAX_ACTIVE: 6,
-    PULSE_COLOR: 'rgba(255, 255, 255, 0.9)',
+    PULSE_COLOR_R: 200,             // pulse ring colour (split for perf)
+    PULSE_COLOR_G: 210,
+    PULSE_COLOR_B: 240,
 
     // --- Afterglow ---
     AFTERGLOW_DURATION: 0.5,        // seconds after pulse reveals an obstacle
@@ -44,6 +46,7 @@ export const CONFIG = {
     PARTICLE_SPEED_MIN: 60,
     PARTICLE_SPEED_MAX: 300,
     PARTICLE_LIFETIME: 0.8,         // seconds
+    PARTICLE_COLOR: '#e8e8ec',
 
     // --- Scoring ---
     SCORE_PER_PIXEL: 0.1,
